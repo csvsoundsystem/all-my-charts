@@ -132,7 +132,7 @@
 
 	function makeHighchart(series_data, x_axis_info, chart_config){
 		console.log(series_data)
-	   $('#container').highcharts({
+	   $(chart_config.container).highcharts({
           chart: {
               type: (chart_config.chart_type == 'datetime' ? 'line' : 'column')
           },
