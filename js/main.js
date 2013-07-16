@@ -44,12 +44,9 @@
   		treasuryIo(chart_settings.query)
   		  .done(function(response){
 
-          // console.log(callback)
   		    createAndFetchDs(response, chart_settings, $ctnr, callback);
 
   		  }).fail(function(err){
-
-  		    // console.log(err);
 
   		  });
   	};
@@ -184,6 +181,15 @@
           subtitle: {
               text: ''
           },
+          legend:{
+            borderRadius: 0,
+            itemHoverStyle: {
+              textDecoration: 'underline'
+            },
+            itemStyle: {
+              textDecoration: 'none'
+            }
+          },
           xAxis: x_axis_info,
           yAxis: {
               title: {
@@ -235,6 +241,54 @@
       $ctnr.mouseleave( function(e){
           $hover_templ.hide();
       });
+
+      // This function constrains the hover window to the bounds of the $ctnr
+      // Adjust the xBuffer and yBuffer to make tweaks
+      function calcHoverPosition($ctnr, $hover_templ, e){
+        var xOffset = e.pageX
+        , yOffset = e.pageY
+        , xBuffer = 10
+        , yBuffer = 50
+
+        , hover_window_height = $hover_templ.outerHeight()
+        , hover_window_width = $hover_templ.outerWidth()
+
+        , map_canvas_height = $ctnr.outerHeight()
+        , map_canvas_width = $ctnr.outerWidth()
+
+        , map_canvas_offset_left = $ctnr.offset().left
+        , map_canvas_offset_top = $ctnr.offset().top;
+
+        $hover_templ.css({
+          'top': yOffset + yBuffer,
+          'left': xOffset - hover_window_width/2
+        });
+
+        // If it goes against the left wall
+        if (xOffset < map_canvas_offset_left  + hover_window_width/2 + xBuffer){
+          $hover_templ.css({
+            'left': xBuffer
+          });
+        }
+        // If it goes against the right wall
+        if(xOffset > map_canvas_width - hover_window_width/2 - xBuffer){
+          $hover_templ.css({
+            'left': map_canvas_width - hover_window_width - xBuffer
+          });
+        }
+        // If it goes against the bottom
+        if(yOffset > map_canvas_height - hover_window_height - yBuffer){
+          $hover_templ.css({
+            'top': yOffset - yBuffer/2 - hover_window_height
+          });
+        }
+      }
+
+      $ctnr.mousemove(function(e){
+          calcHoverPosition($ctnr, $hover_templ, e)
+      });
+
+
   	};
 
     function startTheShow(chart_settings, $ctnr){
