@@ -39,4 +39,4 @@ $('#container').dynamicHighchart({
 
 
 ### TODO
-	1. Test `datetime` with `year-month` groups
+1. Test `datetime` with `year-month` groups
