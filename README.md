@@ -1,8 +1,18 @@
 # Dynamic Multi-series HighCharts, a jQuery plugin.
 
-Full README coming soon. For now, run a local server on the `index.html` with `python -m SimpleHTTPServer` and play with the query given to `chart_config`.
-
 ### Usage
+
+This plugin requires <a href="" target="_blank">`jQuery`</a>, <a href="https://github.com/misoproject/dataset" target="_blank">`miso.dataset`</a> with dependencies, and <a href="http://www.highcharts.com/" target="_blank">`highcharts`</a>. Require them and the main plugin like so:
+
+````
+<script src="path/to/jquery.1.10.1.min.js"></script>
+<script src="path/to/miso.ds.deps.ie.0.4.1.js"></script>
+<script src="path/to/highcharts.js"></script>
+<script src="path/to/jquery.dynamic-highchart.js"></script>
+
+````
+
+Note: If you're not a non-profit, Highcharts has [some extra Terms & Conditions](http://shop.highsoft.com/highcharts.html).
 
 ````
 $('#container').dynamicHighchart({
@@ -16,7 +26,7 @@ $('#container').dynamicHighchart({
 });
 ````
 
-Assign `datetime` to `chart_type` if you want a line chart that has a datetime x-axis. Else assign `categorical` if you want a bar chart. Note: these require the data to either be regular output format from treasury.io for the former, or the result of a `GROUP BY` query for the categorical chart to make sense.
+`chart_type` can be `datetime` or `categorical. Choose the former if you have an x-axis that is dates, i.e. a line chart. Choose the latter if you have categories, i.e. a bar chart.
 
 `series` is the name of the column that has all of the names of the things you want to chart, e.g. program names or `item` in `t2`.
 
@@ -29,3 +39,4 @@ Assign `datetime` to `chart_type` if you want a line chart that has a datetime x
 `title` is the title of your chart as a string.
 
 `y_axis_label` is the y-axis label as a string.
+
