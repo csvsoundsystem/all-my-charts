@@ -1,5 +1,4 @@
 (function ( $ ) {
-
   $.fn.dynamicHighchart = function ( options ) {
      var chart_settings = $.extend({
         // These are the defaults.
@@ -134,7 +133,6 @@
   		});
   		return series
   	}
-
 
   	function getChartTypeSpecificXAxis(type, items_uniq, col){
   		var datetime = {
@@ -288,10 +286,14 @@
           calcHoverPosition($ctnr, $hover_templ, e)
       });
 
-
   	};
 
+    function chartLoading($ctnr){
+      $ctnr.html('<div class="chart-loading">Loading chart... <img src="data:image/gif;base64,R0lGODlhEAAQAPQAAP///wAAAPj4+Dg4OISEhAYGBiYmJtbW1qioqBYWFnZ2dmZmZuTk5JiYmMbGxkhISFZWVgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAAFUCAgjmRpnqUwFGwhKoRgqq2YFMaRGjWA8AbZiIBbjQQ8AmmFUJEQhQGJhaKOrCksgEla+KIkYvC6SJKQOISoNSYdeIk1ayA8ExTyeR3F749CACH5BAkKAAAALAAAAAAQABAAAAVoICCKR9KMaCoaxeCoqEAkRX3AwMHWxQIIjJSAZWgUEgzBwCBAEQpMwIDwY1FHgwJCtOW2UDWYIDyqNVVkUbYr6CK+o2eUMKgWrqKhj0FrEM8jQQALPFA3MAc8CQSAMA5ZBjgqDQmHIyEAIfkECQoAAAAsAAAAABAAEAAABWAgII4j85Ao2hRIKgrEUBQJLaSHMe8zgQo6Q8sxS7RIhILhBkgumCTZsXkACBC+0cwF2GoLLoFXREDcDlkAojBICRaFLDCOQtQKjmsQSubtDFU/NXcDBHwkaw1cKQ8MiyEAIfkECQoAAAAsAAAAABAAEAAABVIgII5kaZ6AIJQCMRTFQKiDQx4GrBfGa4uCnAEhQuRgPwCBtwK+kCNFgjh6QlFYgGO7baJ2CxIioSDpwqNggWCGDVVGphly3BkOpXDrKfNm/4AhACH5BAkKAAAALAAAAAAQABAAAAVgICCOZGmeqEAMRTEQwskYbV0Yx7kYSIzQhtgoBxCKBDQCIOcoLBimRiFhSABYU5gIgW01pLUBYkRItAYAqrlhYiwKjiWAcDMWY8QjsCf4DewiBzQ2N1AmKlgvgCiMjSQhACH5BAkKAAAALAAAAAAQABAAAAVfICCOZGmeqEgUxUAIpkA0AMKyxkEiSZEIsJqhYAg+boUFSTAkiBiNHks3sg1ILAfBiS10gyqCg0UaFBCkwy3RYKiIYMAC+RAxiQgYsJdAjw5DN2gILzEEZgVcKYuMJiEAOwAAAAAAAAAAAA=="></div>')
+    }
+
     function startTheShow(chart_settings, $ctnr){
+      chartLoading($ctnr);
       fetchJSON(chart_settings, $ctnr, function(response){
         // console.log(response) /* "Chart created"
       	bindHandlers($ctnr);
@@ -303,22 +305,6 @@
       startTheShow(chart_settings, $ctnr);
 
     });
-  }; /* E N D  J Q U E R Y */
-
-
-  var chart_settings = {
-    // query: 'SELECT item, avg(today) as today FROM "t2" WHERE year = 2012 AND type = \'withdrawal\' AND is_total = 0 GROUP BY item',
-    // query: "SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND item = 'Energy Department programs'",
-    query: "SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
-    chart_type: 'datetime',
-    series: 'item',
-    date: 'date',
-    value: 'today',
-    title: 'Jan and Feb withdrawals (2012)',
-    y_axis_label: 'Today (millions)'
   };
-
-  $('#container').dynamicHighchart(chart_settings);
-
 
 })(jQuery);
