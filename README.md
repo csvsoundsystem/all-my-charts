@@ -9,7 +9,6 @@ This plugin requires <a href="" target="_blank">`jQuery`</a>, <a href="https://g
 <script src="path/to/miso.ds.deps.ie.0.4.1.js"></script>
 <script src="path/to/highcharts.js"></script>
 <script src="path/to/jquery.dynamic-highchart.js"></script>
-
 ````
 
 Note: If you're not a non-profit, Highcharts has [some extra Terms & Conditions](http://shop.highsoft.com/highcharts.html).
