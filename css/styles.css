@@ -1,0 +1,21 @@
+#hover-templ{
+	position:absolute;
+	font-family: arial, sans-serif;
+	border: 1px solid #ccc;
+	-webkit-box-shadow: 0 0 12px #ccc;
+	-moz-box-shadow: 0 0 12px #ccc;
+	box-shadow: 0 0 12px #ccc;
+	width:200px;
+	display:none;
+	padding:8px;
+	z-index: 999999;
+	background-color: white;
+	font-size:14px;
+	-webkit-box-sizing: border-box;
+	   -moz-box-sizing: border-box;
+	        box-sizing: border-box;
+}
+.chart-hover-title{
+	font-weight: bold;
+	margin-bottom:5px;
+}
