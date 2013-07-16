@@ -26,13 +26,13 @@ $('#container').dynamicHighchart({
 });
 ````
 
-`chart_type` can be `datetime` or `categorical. Choose the former if you have an x-axis that is dates, i.e. a line chart. Choose the latter if you have categories, i.e. a bar chart.
-<br/>`series` is the name of the column that has all of the names of the things you want to chart, e.g. program names or `item` in `t2`.
-<br/>`date` is the column that has the date, expected to be in `YYYY-MM-DD` which treasury.io does automatically.
-<br/>`value` is the column that has the value you want for your y-axis.
-<br/>`container` is the selector, usually an id, for the div where your chart will be created
-<br/>`title` is the title of your chart as a string.
-<br/>`y_axis_label` is the y-axis label as a string.
+`chart_type` can be `datetime` or `categorical. Choose the former if you have an x-axis that is dates, i.e. a line chart. Choose the latter if you have categories, i.e. a bar chart.<br/>
+`series` is the name of the column that has all of the names of the things you want to chart, e.g. program names or `item` in `t2`.<br/>
+`date` is the column that has the date, expected to be in `YYYY-MM-DD` which treasury.io does automatically.<br/>
+`value` is the column that has the value you want for your y-axis.<br/>
+`container` is the selector, usually an id, for the div where your chart will be created.<br/>
+`title` is the title of your chart as a string.<br/>
+`y_axis_label` is the y-axis label as a string.<br/>
 
 
 
