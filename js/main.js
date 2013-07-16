@@ -9,9 +9,9 @@
         date: 'date',
         value: 'today',
         title: 'Chart Title',
-        y_axis_label: 'Y-Axis label'
+        y_axis_label: 'Y-Axis label',
+    	  color_palette: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5'],
       }, options ),
-  	  color_palette = ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5'],
   		$hover_templ = $('#hover-templ'),
   		response_ds;
 
@@ -72,7 +72,7 @@
   	function reshapeData(ds, chart_settings, $ctnr, callback){
   	  	var items_uniq = findDistinctSeriesNames(ds, chart_settings.series), // findDistinctSeriesNames takes a miso.dataset object and the column name whose values you want unique records of. It returns an array of unique names that appear as values in the specified column.
   	  			series_ds_arr  = geEachSeriesDs(ds, items_uniq, chart_settings.series), // getDataForEachSeries takes a miso.dataset object, the unique columns and the name of the column those unique items appear in. It returns an array of miso ds objects, one for every unique item name.
-  	  			series_data_hc = createHighChartsDataSeries(series_ds_arr, chart_settings.series, chart_settings.value, chart_settings.date, chart_settings.chart_type), // createHighChartsDataSeries returns an arrray of objects that conforms to how highcharts like a series object to be, namely, a name as a string, data as an array of values and for our purposes a color chosen from the color palette index. For a datetime series, highcharts wants the data array to be an array of arrays. Each value point is an array of two values, the date in unix time and what will be the y coordinate.
+  	  			series_data_hc = createHighChartsDataSeries(series_ds_arr, chart_settings.series, chart_settings.value, chart_settings.date, chart_settings.chart_type, chart_settings.color_palette), // createHighChartsDataSeries returns an arrray of objects that conforms to how highcharts like a series object to be, namely, a name as a string, data as an array of values and for our purposes a color chosen from the color palette index. For a datetime series, highcharts wants the data array to be an array of arrays. Each value point is an array of two values, the date in unix time and what will be the y coordinate.
   	  			x_axis_info    = getChartTypeSpecificXAxis(chart_settings.chart_type, items_uniq, chart_settings.series); // getChartTypeSpecificXAxis this will pick what kind of Highcharts xAxis object is added into the chart JSON.
 
   	  	makeHighchart(series_data_hc, x_axis_info, chart_settings, $ctnr, callback)
@@ -103,7 +103,7 @@
         return val;
     };
 
-  	function createHighChartsDataSeries(series_ds_arr, col, value, date, type){
+  	function createHighChartsDataSeries(series_ds_arr, col, value, date, type, color_palette){
   		var series = [];
   		_.each(series_ds_arr, function(series_ds, index){
   			var series_name = series_ds.column(col).data[0],
@@ -125,8 +125,8 @@
   			    	series_data = series_data_value;
   			    };
 
-  			// We only have twenty colors so if the index is above 20, kick it back down.
-        var color_index = keepBetweenZeroAndN(index, 20);
+  			// If you exceed the number of colors you put in, start over at the beginning.
+        var color_index = keepBetweenZeroAndN(index, color_palette.length);
 
   			var obj = {
   			    	name:  series_name,
@@ -263,8 +263,6 @@
     title: 'Jan and Feb withdrawals (2012)',
     y_axis_label: 'Today (millions)'
   };
-
-
 
   $('#container').dynamicHighchart(chart_settings);
 
