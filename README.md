@@ -1,6 +1,20 @@
-# Dynamic Multi-series HighCharts
+# Dynamic Multi-series HighCharts, a jQuery plugin.
 
 Full README coming soon. For now, run a local server on the `index.html` with `python -m SimpleHTTPServer` and play with the query given to `chart_config`.
+
+### Usage
+
+````
+$('#container').dynamicHighchart({
+	query: "SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
+	chart_type: 'datetime',
+	series: 'item',
+	date: 'date',
+	value: 'today',
+	title: 'Jan and Feb withdrawals (2012)',
+	y_axis_label: 'Today (millions)'
+});
+````
 
 Assign `datetime` to `chart_type` if you want a line chart that has a datetime x-axis. Else assign `categorical` if you want a bar chart. Note: these require the data to either be regular output format from treasury.io for the former, or the result of a `GROUP BY` query for the categorical chart to make sense.
 
