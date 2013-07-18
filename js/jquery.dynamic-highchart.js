@@ -2,11 +2,11 @@
   $.fn.dynamicHighchart = function ( options ) {
      var chart_settings = $.extend({
         // These are the defaults.
-        query: "SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
+        query_url: "https://premium.scraperwiki.com/cc7znvq/47d80ae900e04f2/sql/?q=SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
         chart_type: 'datetime',
         series: 'item',
-        date: 'date',
-        value: 'today',
+        x: 'date',
+        y: 'today',
         title: 'Chart Title',
         y_axis_label: 'Y-Axis label',
     	  color_palette: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5'],
@@ -33,14 +33,14 @@
 
     };
 
-  	function treasuryIo(query){
+  	function sendQuery(query_url){
   	  return $.ajax({
-  	    url: 'https://premium.scraperwiki.com/cc7znvq/47d80ae900e04f2/sql/?q='+query
+  	    url: query_url
   	  })
   	};
 
   	function fetchJSON(chart_settings, $ctnr, callback){
-  		treasuryIo(chart_settings.query)
+  		sendQuery(chart_settings.query_url)
   		  .done(function(response){
 
   		    createAndFetchDs(response, chart_settings, $ctnr, callback);
@@ -68,7 +68,7 @@
   	function reshapeData(ds, chart_settings, $ctnr, callback){
   	  	var items_uniq = findDistinctSeriesNames(ds, chart_settings.series), // findDistinctSeriesNames takes a miso.dataset object and the column name whose values you want unique records of. It returns an array of unique names that appear as values in the specified column.
   	  			series_ds_arr  = geEachSeriesDs(ds, items_uniq, chart_settings.series), // getDataForEachSeries takes a miso.dataset object, the unique columns and the name of the column those unique items appear in. It returns an array of miso ds objects, one for every unique item name.
-  	  			series_data_hc = createHighChartsDataSeries(series_ds_arr, chart_settings.series, chart_settings.value, chart_settings.date, chart_settings.chart_type, chart_settings.color_palette), // createHighChartsDataSeries returns an arrray of objects that conforms to how highcharts like a series object to be, namely, a name as a string, data as an array of values and for our purposes a color chosen from the color palette index. For a datetime series, highcharts wants the data array to be an array of arrays. Each value point is an array of two values, the date in unix time and what will be the y coordinate.
+  	  			series_data_hc = createHighChartsDataSeries(series_ds_arr, chart_settings.series, chart_settings.y, chart_settings.x, chart_settings.chart_type, chart_settings.color_palette), // createHighChartsDataSeries returns an arrray of objects that conforms to how highcharts like a series object to be, namely, a name as a string, data as an array of values and for our purposes a color chosen from the color palette index. For a datetime series, highcharts wants the data array to be an array of arrays. Each value point is an array of two values, the date in unix time and what will be the y coordinate.
   	  			x_axis_info    = getChartTypeSpecificXAxis(chart_settings.chart_type, items_uniq, chart_settings.series); // getChartTypeSpecificXAxis this will pick what kind of Highcharts xAxis object is added into the chart JSON.
 
   	  	makeHighchart(series_data_hc, x_axis_info, chart_settings, $ctnr, callback)
@@ -99,7 +99,7 @@
         return val;
     };
 
-  	function createHighChartsDataSeries(series_ds_arr, col, value, date, type, color_palette){
+  	function createHighChartsDataSeries(series_ds_arr, col, value, x, type, color_palette){
   		var series = [];
   		_.each(series_ds_arr, function(series_ds, index){
   			var series_name = series_ds.column(col).data[0],
@@ -108,7 +108,7 @@
   			    series_data = [];
 
   			    if (type == 'datetime'){
-  			    	series_data_time = series_ds.column(date).data;
+  			    	series_data_time = series_ds.column(x).data;
 
   				    // Create the [unix_time, value] format that highcharts likes for time series
   				    for (var i = 0; i < series_data_value.length; i++){

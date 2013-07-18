@@ -16,9 +16,7 @@
 	(function(){
 
 	  var chart_settings = {
-	    // query: 'SELECT item, avg(today) as today FROM "t2" WHERE year = 2012 AND type = \'withdrawal\' AND is_total = 0 GROUP BY item',
-	    // query: "SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND item = 'Energy Department programs'",
-	    query: "SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
+	    query: "https://premium.scraperwiki.com/cc7znvq/47d80ae900e04f2/sql/?q=SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
 	    chart_type: 'datetime',
 	    series: 'item',
 	    date: 'date',
