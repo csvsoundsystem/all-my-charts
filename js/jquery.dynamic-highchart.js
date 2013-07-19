@@ -29,14 +29,14 @@
     		return '-$' + with_commas.replace('-','');
     	}else{
     		return '$' + with_commas;
-    	}
+    	};
 
     };
 
   	function sendQuery(query_url){
   	  return $.ajax({
   	    url: query_url
-  	  })
+  	  });
   	};
 
   	function fetchJSON(chart_settings, $ctnr, json_chart_callback){
