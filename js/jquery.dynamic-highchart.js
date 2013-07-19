@@ -1,5 +1,5 @@
 (function ( $ ) {
-  $.fn.dynamicHighchart = function ( options ) {
+  $.fn.dynamicHighchart = function ( options , callback) {
      var chart_settings = $.extend({
         // These are the defaults.
         query_url: "https://premium.scraperwiki.com/cc7znvq/47d80ae900e04f2/sql/?q=SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
@@ -39,18 +39,18 @@
   	  })
   	};
 
-  	function fetchJSON(chart_settings, $ctnr, callback){
+  	function fetchJSON(chart_settings, $ctnr, json_chart_callback){
   		sendQuery(chart_settings.query_url)
   		  .done(function(response){
 
-  		    createAndFetchDs(response, chart_settings, $ctnr, callback);
+  		    createAndFetchDs(response, chart_settings, $ctnr, json_chart_callback);
 
   		  }).fail(function(err){
 
   		  });
   	};
 
-  	function createAndFetchDs(response, chart_settings, $ctnr, callback){
+  	function createAndFetchDs(response, chart_settings, $ctnr, json_chart_callback){
   		response_ds = new Miso.Dataset({
   			data: response
   		});
@@ -58,20 +58,20 @@
   		response_ds.fetch({ 
   		  success : function() {
   		  	var ds = this;
-  		  	reshapeData(ds, chart_settings, $ctnr, callback)
+  		  	reshapeData(ds, chart_settings, $ctnr, json_chart_callback)
   		  },
   		  error : function() {
   		  }
   		});
   	};
 
-  	function reshapeData(ds, chart_settings, $ctnr, callback){
+  	function reshapeData(ds, chart_settings, $ctnr, json_chart_callback){
   	  	var items_uniq = findDistinctSeriesNames(ds, chart_settings.series), // findDistinctSeriesNames takes a miso.dataset object and the column name whose values you want unique records of. It returns an array of unique names that appear as values in the specified column.
   	  			series_ds_arr  = geEachSeriesDs(ds, items_uniq, chart_settings.series), // getDataForEachSeries takes a miso.dataset object, the unique columns and the name of the column those unique items appear in. It returns an array of miso ds objects, one for every unique item name.
   	  			series_data_hc = createHighChartsDataSeries(series_ds_arr, chart_settings.series, chart_settings.y, chart_settings.x, chart_settings.chart_type, chart_settings.color_palette), // createHighChartsDataSeries returns an arrray of objects that conforms to how highcharts like a series object to be, namely, a name as a string, data as an array of values and for our purposes a color chosen from the color palette index. For a datetime series, highcharts wants the data array to be an array of arrays. Each value point is an array of two values, the date in unix time and what will be the y coordinate.
   	  			x_axis_info    = getChartTypeSpecificXAxis(chart_settings.chart_type, items_uniq, chart_settings.series); // getChartTypeSpecificXAxis this will pick what kind of Highcharts xAxis object is added into the chart JSON.
 
-  	  	makeHighchart(series_data_hc, x_axis_info, chart_settings, $ctnr, callback)
+  	  	makeHighchart(series_data_hc, x_axis_info, chart_settings, $ctnr, json_chart_callback)
     };
 
   	function findDistinctSeriesNames(ds, col){
@@ -164,7 +164,7 @@
   		};
   	};
 
-  	function makeHighchart(series_data, x_axis_info, chart_settings, $ctnr, callback){
+  	function makeHighchart(series_data, x_axis_info, chart_settings, $ctnr, json_chart_callback){
 	    $ctnr.highcharts({
           chart: {
               type: (chart_settings.chart_type == 'datetime' ? 'line' : 'column')
@@ -225,7 +225,8 @@
           	}
           }
       });
-      callback('Chart created')
+      // console.log('created')
+      json_chart_callback('Chart created');
       
   	};
 
@@ -292,17 +293,17 @@
       $ctnr.html('<div class="chart-loading">Loading chart... <img src="data:image/gif;base64,R0lGODlhEAAQAPQAAP///wAAAPj4+Dg4OISEhAYGBiYmJtbW1qioqBYWFnZ2dmZmZuTk5JiYmMbGxkhISFZWVgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAAFUCAgjmRpnqUwFGwhKoRgqq2YFMaRGjWA8AbZiIBbjQQ8AmmFUJEQhQGJhaKOrCksgEla+KIkYvC6SJKQOISoNSYdeIk1ayA8ExTyeR3F749CACH5BAkKAAAALAAAAAAQABAAAAVoICCKR9KMaCoaxeCoqEAkRX3AwMHWxQIIjJSAZWgUEgzBwCBAEQpMwIDwY1FHgwJCtOW2UDWYIDyqNVVkUbYr6CK+o2eUMKgWrqKhj0FrEM8jQQALPFA3MAc8CQSAMA5ZBjgqDQmHIyEAIfkECQoAAAAsAAAAABAAEAAABWAgII4j85Ao2hRIKgrEUBQJLaSHMe8zgQo6Q8sxS7RIhILhBkgumCTZsXkACBC+0cwF2GoLLoFXREDcDlkAojBICRaFLDCOQtQKjmsQSubtDFU/NXcDBHwkaw1cKQ8MiyEAIfkECQoAAAAsAAAAABAAEAAABVIgII5kaZ6AIJQCMRTFQKiDQx4GrBfGa4uCnAEhQuRgPwCBtwK+kCNFgjh6QlFYgGO7baJ2CxIioSDpwqNggWCGDVVGphly3BkOpXDrKfNm/4AhACH5BAkKAAAALAAAAAAQABAAAAVgICCOZGmeqEAMRTEQwskYbV0Yx7kYSIzQhtgoBxCKBDQCIOcoLBimRiFhSABYU5gIgW01pLUBYkRItAYAqrlhYiwKjiWAcDMWY8QjsCf4DewiBzQ2N1AmKlgvgCiMjSQhACH5BAkKAAAALAAAAAAQABAAAAVfICCOZGmeqEgUxUAIpkA0AMKyxkEiSZEIsJqhYAg+boUFSTAkiBiNHks3sg1ILAfBiS10gyqCg0UaFBCkwy3RYKiIYMAC+RAxiQgYsJdAjw5DN2gILzEEZgVcKYuMJiEAOwAAAAAAAAAAAA=="></div>')
     }
 
-    function startTheShow(chart_settings, $ctnr){
+    function startTheShow(chart_settings, $ctnr, callback){
       chartLoading($ctnr);
       fetchJSON(chart_settings, $ctnr, function(response){
-        // console.log(response) /* "Chart created"
-      	bindHandlers($ctnr);
+        callback(response); /* "Chart created" */
+        bindHandlers($ctnr);
       });
     };
 
     return this.each(function(){
       var $ctnr = $(this);
-      startTheShow(chart_settings, $ctnr);
+      startTheShow(chart_settings, $ctnr, callback);
 
     });
   };
