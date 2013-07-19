@@ -284,7 +284,7 @@
       }
 
       $ctnr.mousemove(function(e){
-          calcHoverPosition($ctnr, $hover_templ, e)
+          calcHoverPosition($ctnr, $hover_templ, e);
       });
 
   	};
