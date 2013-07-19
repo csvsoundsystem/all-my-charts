@@ -9,6 +9,7 @@
 	display:none;
 	padding:8px;
 	z-index: 999999;
+	color: #303030;
 	background-color: white;
 	font-size:14px;
 	-webkit-box-sizing: border-box;
