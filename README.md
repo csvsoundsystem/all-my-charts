@@ -1,4 +1,6 @@
-# Dynamic Multi-series HighCharts, a jQuery plugin.
+# All My Charts, Dynamic Multi-series HighCharts, a jQuery plugin.
+
+## A jQuery plugin to create dynamica multi-series HighCharts
 
 ### Usage
 
