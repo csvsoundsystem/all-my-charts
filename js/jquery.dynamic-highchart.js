@@ -138,7 +138,7 @@
     function getChartTypeSpecificXAxis(type, items_uniq, col){
       var datetime = {
                   type: 'datetime',
-                  minTickInterval: 24 * 3600 * 1000, // Don't let the time interval go less than one day
+                  // minTickInterval: 24 * 3600 * 1000, // Don't let the time interval go less than one day
                   dateTimeLabelFormats: {
                       millisecond: '%H:%M:%S.%L',
                       second: '%H:%M:%S',
@@ -204,7 +204,7 @@
           tooltip: {
               formatter: function() {
                 var s = '<div class="chart-hover-title" style="color:'+ this.series.color +'">'+ this.series.name +'</div><div class="chart-hover-info">'+
-                       (chart_settings.chart_type == 'datetime' ? Highcharts.dateFormat('%b %e, %Y', this.x) : this.x) +': '+ currencyFormatNumber(this.y) + '</div>';
+                       (chart_settings.chart_type == 'datetime' ? Highcharts.dateFormat('%b %e, %Y', this.x) : this.x) +': '+ this.y + '</div>';
                 // $hover_templ.html(s).show();
                 return s
               }
