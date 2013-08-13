@@ -36,8 +36,3 @@ $('#container').dynamicHighchart({
 * `container` is the selector, usually an id, for the div where your chart will be created.
 * `title` is the title of your chart as a string.
 * `y_axis_label` is the y-axis label as a string.
-
-
-
-### TODO
-1. Test `datetime` with `year-month` groups
