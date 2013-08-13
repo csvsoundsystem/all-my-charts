@@ -17,7 +17,7 @@ Note: If you're not a non-profit, Highcharts has [some extra Terms & Conditions]
 
 ````
 $('#container').dynamicHighchart({
-	query: "SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
+	query_url: "https://premium.scraperwiki.com/cc7znvq/47d80ae900e04f2/sql/?q=SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
 	chart_type: 'datetime',
 	series: 'item',
 	date: 'date',
