@@ -1,6 +1,6 @@
 # All My Charts
 
-## A jQuery plugin to create dynamica multi-series HighCharts
+## A jQuery plugin to create dynamic multi-series HighCharts
 
 ### Usage
 
