@@ -20,8 +20,8 @@ $('#container').dynamicHighchart({
 	query_url: "https://premium.scraperwiki.com/cc7znvq/47d80ae900e04f2/sql/?q=SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
 	chart_type: 'datetime',
 	series: 'item',
-	date: 'date',
-	value: 'today',
+	x: 'date',
+	y: 'today',
 	title: 'Jan and Feb withdrawals (2012)',
 	y_axis_label: 'Today (millions)'
 });
