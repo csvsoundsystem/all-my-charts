@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>All my charts: If I could see all my charts tonight.</title>
+	<link href="../css/jquery.dynamic-highchart.css"  el="stylesheet" type="text/css" >
+	<script src="../js/thirdparty/jquery.1.10.1.min.js"></script>
+	<script src="../js/thirdparty/miso.ds.deps.ie.0.4.1.js"></script>
+	<script src="../js/thirdparty/highcharts.js"></script>
+	<script src="../js/jquery.dynamic-highchart.js"></script>
+</head>
+<body>
+	<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+
+	<div id="hover-templ"></div>
+	<script>
+	(function(){
+
+	  var chart_settings = {
+	  	data_format: 'csv',
+	  	delimiter: ',', // This defaults to ',' so there's no need to include it. Showing it just to show usage.
+	    url: "data/data.csv",
+	    chart_type: 'datetime',
+	    series: 'name',
+	    x: 'date',
+	    y: 'value',
+	    title: 'Loading from a csv',
+	    y_axis_label: 'Y-axis label',
+	    min_datetick_interval: 24 * 3600 * 1000 // Don't let it go less than a day (optional)
+	  };
+
+	  $('#container').dynamicHighchart(chart_settings, function(response){
+	  	// Chart done
+	  	console.log(response);
+	  });
+
+	}).call(this);
+
+
+	</script>
+</body>
+</html>
