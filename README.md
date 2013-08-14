@@ -51,4 +51,4 @@ The aim of this library is to make it as easy as possible to create multi-series
 
 HighCharts has a [nicely documented API](http://api.highcharts.com/) and you get a lot of stuff for free like tooltips and a legend with clickable items that will show/hide your data series and resize your Y-scale.
 
-Other recent chart builder libraries such as [ChartBuilder](https://github.com/Quartz/Chartbuilder) and [NVD3](https://github.com/novus/nvd3) use D3 to make charts and although D3 is extremely powerful, it also has browser compatibility issues. I've tested HighCharts down to IE8 and it works well. 
+Other recent chart builder libraries such as [ChartBuilder](https://github.com/Quartz/Chartbuilder) and [NVD3](https://github.com/novus/nvd3) use D3 to make charts. Although D3 is extremely powerful, it also has browser compatibility issues. I've tested HighCharts down to IE8 and it works well. 
