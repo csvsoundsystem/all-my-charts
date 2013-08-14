@@ -47,7 +47,7 @@ $('#container').dynamicHighchart({
 
 #### Why HighCharts?
 
-The aim of this library is to make it as easy as possible to create multi-series datetime charts. 
+The aim of this library is to make it as easy as possible to create multi-series datetime and categorical charts. 
 
 HighCharts has a [nicely documented API](http://api.highcharts.com/) and you get a lot of stuff for free like tooltips and a legend with clickable items that will show/hide your data series and resize your Y-scale.
 
