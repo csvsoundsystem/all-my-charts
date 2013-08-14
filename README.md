@@ -17,7 +17,7 @@ Note: If you're not a non-profit, HighCharts has [some extra Terms & Conditions]
 
 ````
 $('#container').dynamicHighchart({
-	url: "https://premium.scraperwiki.com/cc7znvq/47d80ae900e04f2/sql/?q=SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
+	data: "https://premium.scraperwiki.com/cc7znvq/47d80ae900e04f2/sql/?q=SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
 	chart_type: 'datetime',
 	series: 'item',
 	x: 'date',
@@ -32,7 +32,7 @@ $('#container').dynamicHighchart({
 
 * `data_format` is the format of your original data. Needn't be specified if your data is `json`. If your data is a `csv` use `data_format: 'csv'` (optional).
 * `delimiter` can be set to whatever your data is delimited by. If you choose `'csv'` for `data_format`, this will default to `','`, a comma (optional).
-* `url` is the path to your data. Can be a url or a simple file path.
+* `data` is either the path to your data or your data itself as json object (array of objects). If it's a path it can be a url or a local file path.
 * `chart_type` can be `datetime` or `categorical`. Choose the former if you have an x-axis that is dates, i.e. a line chart. Choose the latter if you have categories, i.e. a bar chart.
 * `series` is the name of the column that has all of the names of the things you want to chart, e.g. program names or `item` in `t2`.
 * `y` is the column that has the value you want for your y-axis.

@@ -5,7 +5,7 @@
         // These are the defaults.
         data_format: 'json',
         delimiter: ',',
-        url: "https://premium.scraperwiki.com/cc7znvq/47d80ae900e04f2/sql/?q=SELECT * FROM t2 WHERE year = 2012 AND transaction_type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
+        data: "https://premium.scraperwiki.com/cc7znvq/47d80ae900e04f2/sql/?q=SELECT * FROM t2 WHERE year = 2012 AND transaction_type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
         chart_type: 'datetime',
         series: 'item',
         x: 'date',
@@ -39,18 +39,24 @@
 
     function createAndFetchDs(chart_settings, $ctnr, json_chart_callback){
       var data_format = chart_settings.data_format,
-          url         = chart_settings.url,
+          data        = chart_settings.data,
           delimiter   = chart_settings.delimiter;
 
       var miso_options = {};
 
       if (data_format == 'json'){
-        miso_options = {
-          url: url
+        if (typeof data == 'string'){
+          miso_options = {
+            url: data
+          };
+        }else{
+          miso_options = {
+            data: data
+          };
         };
       }else if (data_format == 'csv'){
         miso_options = {
-          url: url,
+          url: data,
           delimiter: delimiter
         };
       }else{
