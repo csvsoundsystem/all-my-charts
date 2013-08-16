@@ -15,7 +15,6 @@
         color_palette: ['#1f77b4', '#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf','#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5', '#c49c94', '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5'],
         min_datetick_interval: 0 // To not let the day go less than a day use 24 * 3600 * 1000
       }, options ),
-      // $hover_templ = $('#hover-templ'),
       response_ds;
 
     String.prototype.contains = function(it) { return this.indexOf(it) != -1; };
@@ -239,86 +238,14 @@
               marker: {
                 enabled: false,
                 radius: 2
-              },
-              // events:{
-              //     mouseOut:function(){
-              //         $hover_templ.hide();
-              //     }
-              // }
+              }
             }
           }
       });
-      // console.log('created')
       json_chart_callback('Chart created');
       
     };
 
-/*
-    DISABLE THE CUSTOM HOVER WINDOW
-    BECAUSE WHY DO WE REALLY NEED OUR OWN HOVER WINDOW?
-    EVEN IF IT IS NICER THAN THE HIGHCHARTS DEFAULT.
-
-    function bindHandlers($ctnr){
-      $ctnr.mousemove( function(e){
-        $hover_templ.css({
-            'top' : e.pageY + 50,
-            'left': e.pageX - 75
-        });
-      });
-      $ctnr.mouseleave( function(e){
-        $hover_templ.hide();
-      });
-
-      $ctnr.mousemove(function(e){
-        calcHoverPosition($ctnr, $hover_templ, e);
-      });
-
-    };
-
-    // This function constrains the hover window to the bounds of the $ctnr
-    // Adjust the xBuffer and yBuffer to make tweaks
-    // function calcHoverPosition($ctnr, $hover_templ, e){
-      var xOffset = e.pageX
-      , yOffset = e.pageY
-      , xBuffer = 10
-      , yBuffer = 75
-      
-      , hover_window_height    = $hover_templ.outerHeight()
-      , hover_window_width     = $hover_templ.outerWidth()
-      
-      , chart_canvas_height      = $ctnr.outerHeight()
-      , chart_canvas_width       = $ctnr.outerWidth()
-      
-      , chart_canvas_offset_left = $ctnr.offset().left
-      , chart_canvas_offset_top  = $ctnr.offset().top;
-
-      $hover_templ.css({
-        'top': yOffset + yBuffer,
-        'left': xOffset - hover_window_width/2
-      });
-
-      // If it goes against the left wall
-      if (xOffset < chart_canvas_offset_left  + hover_window_width/2 + xBuffer){
-        $hover_templ.css({
-          'left': chart_canvas_offset_left + xBuffer
-        });
-      };
-
-      // If it goes against the right wall
-      if(xOffset > chart_canvas_offset_left + chart_canvas_width - hover_window_width/2 - xBuffer){
-        $hover_templ.css({
-          'left': chart_canvas_offset_left + chart_canvas_width - hover_window_width - xBuffer
-        });
-      };
-
-      // If it goes against the bottom
-      if(yOffset > chart_canvas_offset_top + chart_canvas_height - hover_window_height - yBuffer){
-        $hover_templ.css({
-          'top': yOffset - yBuffer - hover_window_height
-        });
-      };
-    };
-*/
 
     function chartLoading($ctnr){
       $ctnr.html('<div class="chart-loading">Loading chart... <img src="data:image/gif;base64,R0lGODlhEAAQAPQAAP///wAAAPj4+Dg4OISEhAYGBiYmJtbW1qioqBYWFnZ2dmZmZuTk5JiYmMbGxkhISFZWVgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAAFUCAgjmRpnqUwFGwhKoRgqq2YFMaRGjWA8AbZiIBbjQQ8AmmFUJEQhQGJhaKOrCksgEla+KIkYvC6SJKQOISoNSYdeIk1ayA8ExTyeR3F749CACH5BAkKAAAALAAAAAAQABAAAAVoICCKR9KMaCoaxeCoqEAkRX3AwMHWxQIIjJSAZWgUEgzBwCBAEQpMwIDwY1FHgwJCtOW2UDWYIDyqNVVkUbYr6CK+o2eUMKgWrqKhj0FrEM8jQQALPFA3MAc8CQSAMA5ZBjgqDQmHIyEAIfkECQoAAAAsAAAAABAAEAAABWAgII4j85Ao2hRIKgrEUBQJLaSHMe8zgQo6Q8sxS7RIhILhBkgumCTZsXkACBC+0cwF2GoLLoFXREDcDlkAojBICRaFLDCOQtQKjmsQSubtDFU/NXcDBHwkaw1cKQ8MiyEAIfkECQoAAAAsAAAAABAAEAAABVIgII5kaZ6AIJQCMRTFQKiDQx4GrBfGa4uCnAEhQuRgPwCBtwK+kCNFgjh6QlFYgGO7baJ2CxIioSDpwqNggWCGDVVGphly3BkOpXDrKfNm/4AhACH5BAkKAAAALAAAAAAQABAAAAVgICCOZGmeqEAMRTEQwskYbV0Yx7kYSIzQhtgoBxCKBDQCIOcoLBimRiFhSABYU5gIgW01pLUBYkRItAYAqrlhYiwKjiWAcDMWY8QjsCf4DewiBzQ2N1AmKlgvgCiMjSQhACH5BAkKAAAALAAAAAAQABAAAAVfICCOZGmeqEgUxUAIpkA0AMKyxkEiSZEIsJqhYAg+boUFSTAkiBiNHks3sg1ILAfBiS10gyqCg0UaFBCkwy3RYKiIYMAC+RAxiQgYsJdAjw5DN2gILzEEZgVcKYuMJiEAOwAAAAAAAAAAAA=="></div>')
@@ -328,7 +255,6 @@
       chartLoading($ctnr);
       createAndFetchDs(chart_settings, $ctnr, function(response){
         callback(response); /* "Chart created" */
-        // bindHandlers($ctnr);
       });
     };
 
