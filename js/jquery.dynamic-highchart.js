@@ -175,6 +175,13 @@
     };
 
     function makeHighchart(series_data, x_axis_info, chart_settings, $ctnr, json_chart_callback){
+
+      Highcharts.setOptions({
+        global: {
+            useUTC: false
+        }
+      });
+        
       $ctnr.highcharts({
           chart: {
               type: (chart_settings.chart_type == 'datetime' ? 'line' : 'column')
