@@ -32,18 +32,63 @@ Note: If you're not a non-profit, HighCharts has [some extra Terms & Conditions]
 
 #### Options
 
-* `data_format`: A string describing your data format. Defaults to `'json'`. Other options: `'csv'`.
-* `delimiter`: A string of your delimiter. Defaults to `','`. Can be any string.
-* `data`: Can be either a string of the path to your data or a json object (an array of objects) itself. If it's a string it can point to a local path `data: '/data/my_data.csv` or a remote URL to call `data: 'http://data.com/endpoint'`.
-* `chart_type`: A string set to either `datetime` or `categorical`. Choose the former if you have an x-axis that is dates, i.e. a line chart. Choose the latter if you have categories, i.e. a bar chart. Defaults to `'datetime'`.
-* `series`: A string of the column name that has all of the names of the things you want to chart, e.g. `'program_name'`. Can also be left blank if you only have one series. Defaults to blank.
-* `y`: A string of the column name that holds your Y-axis values. Defaults to `'today'`.
-* `x`: A string of the column name that holds your X-axis values. Defaults to `'date'`, oonly used for ``datetime`` charts). Dates are expected to be in [ISO-8601](http://en.wikipedia.org/wiki/ISO_8601) i.e. `YYYY-MM-DD`.
-* `container`: A string CSS selector, usually an id, for the div in which your chart will be created. Make sure this div has a set height and width. 
-* `title`: A string that will be the title of your chart. Defaults to `'Chart Title'`. Set this to an empty string, `''`, to kill that section (useful if you're short on space).
-* `y_axis_label`: A string that will be the Y-axis label of your chart. Defaults to `'Y-axisl label'`. Set this to an empty string, `''`, to kill that section (useful if you're short on space).
-* `min_datetick_interval`: A number that will set a minimum tick interval for `datetime` charts. Defaults to `0`, (no limit). To make it so the data never breaks down to less than a day set it to `24 * 3600 * 1000`.
-* `color_palette`: An array literal of hex codes to color your data series. Defaults to [20 categeorical ColorBrewer colors](https://github.com/mbostock/d3/wiki/Ordinal-Scales#categorical-colors).
+### data_format
+Defaults to `'json'`. Other options: `'csv'`.
+
+A string describing your data format. 
+
+### delimiter
+Defaults to `','`. Can be any string.
+ 
+A string of your delimiter.
+
+### data
+Defaults to [treasury.io](http://www.treasury.io) endpoint `"https://premium.scraperwiki.com/cc7znvq/47d80ae900e04f2/sql/?q=SELECT * FROM t2 WHERE year = 2012 AND transaction_type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0"`
+
+Can be either a string of the path to your data or a json object (an array of objects) itself. If it's a string it can point to a local path `data: '/data/my_data.csv` or a remote URL to call `data: 'http://data.com/endpoint'`.
+
+### chart_type
+Defaults to `'datetime'`. Can be `'datetime'` or `'categorical'`.
+
+A string describing the chart you want. Choose `'datetime'` the former if you have an x-axis that is dates, i.e. a line chart. Choose `'categorical'` if you have categories, i.e. a bar chart.
+
+### series
+Defaults to blank, i.e. `''`.
+
+A string of the column name that has all of the names of the things you want to chart, e.g. `'program_name'`. Can also be left blank if you only have one series or want to treat all series as one.
+
+##### y
+Defaults to `'today'`.
+
+A string of the column name that holds your Y-axis values. 
+
+### x
+Defaults to `'date'`.
+A string of the column name that holds your X-axis values. This field is only used for ``datetime`` charts). Dates are expected to be in [ISO-8601](http://en.wikipedia.org/wiki/ISO_8601) i.e. `YYYY-MM-DD`.
+
+### container
+Not set by default.
+
+A string CSS selector, usually an id, for the div in which your chart will be created. Make sure this div has a set height and width. 
+
+### title
+Defaults to `'Chart Title'`.
+
+A string that will be the title of your chart. Set this to an empty string, `''`, to kill that section (useful if you're short on space).
+
+### y_axis_label
+Defaults to `'Y-axis label'`. 
+
+A string that will be the Y-axis label of your chart. Set this to an empty string, `''`, to kill that section (useful if you're short on space).
+
+### min_datetick_interval
+
+A number, in milliseconds, of the minimum tick interval for `datetime` charts. Defaults to `0`, (no limit). To make it so the x-axis never breaks down to intervals less than a day, set it to `24 * 3600 * 1000`, or the number of milliseconds in one day.
+
+### color_palette
+Defaults to [20 categeorical ColorBrewer colors](https://github.com/mbostock/d3/wiki/Ordinal-Scales#categorical-colors).
+
+An array of hex code strings to color your data series.
 
 #### Why HighCharts?
 
