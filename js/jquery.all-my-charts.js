@@ -36,6 +36,16 @@
 
     };
 
+    function convertTypeString(){
+      if (chart_settings.chart_type == 'datetime'){
+        return 'line'
+      }else if (chart_settings.chart_type == 'categorical'){
+        return 'column'
+      }else{
+        return 'scatter'
+      }
+    }
+
     function createAndFetchDs(chart_settings, $ctnr, json_chart_callback){
       var data_format = chart_settings.data_format,
           data        = chart_settings.data,
@@ -165,20 +175,25 @@
                       month: '%b \'%y',
                       year: '%Y'
                     }
-          },
-          categorical = {
+          };
+
+       var categorical = {
             categories: [col]
-          },
-          default_x_info = {
+          };
+
+       var default_x_info = {
             tickColor: '#e3e3e3',
             lineColor: '#e3e3e3'
           };
 
       if (type == 'datetime'){
         return _.extend(datetime, default_x_info);
-      }else{
+      }else if (type == 'categorical'){
         return _.extend(categorical, default_x_info);
-      };
+      }else if (type == 'scatter' || type == 'line'){
+        return default_x_info
+      }
+
     };
 
     function makeHighchart(series_data, x_axis_info, chart_settings, $ctnr, json_chart_callback){
@@ -191,7 +206,7 @@
 
       $ctnr.highcharts({
           chart: {
-              type: (chart_settings.chart_type == 'datetime' ? 'line' : 'column')
+              type: convertTypeString()
           },
           title: {
               text: chart_settings.title,
