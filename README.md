@@ -12,13 +12,13 @@ This plugin requires <a href="" target="_blank">`jQuery`</a>, <a href="https://g
 <script src="path/to/jquery.1.10.1.min.js"></script>
 <script src="path/to/miso.ds.deps.ie.0.4.1.js"></script>
 <script src="path/to/highcharts.js"></script>
-<script src="path/to/jquery.dynamic-highchart.js"></script>
+<script src="path/to/jquery.all-my-charts.js"></script>
 ````
 
 Note: If you're not a non-profit, HighCharts has [some extra Terms & Conditions](http://shop.highsoft.com/highcharts.html).
 
 ````
-$('#container').dynamicHighchart({
+$('#container').allMyCharts({
 	data: "https://premium.scraperwiki.com/cc7znvq/47d80ae900e04f2/sql/?q=SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
 	chart_type: 'datetime',
 	series: 'item',
