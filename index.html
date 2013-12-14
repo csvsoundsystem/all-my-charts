@@ -7,6 +7,7 @@
 	<script src="js/thirdparty/jquery.1.10.1.min.js"></script>
 	<script src="js/thirdparty/miso.ds.deps.ie.0.4.1.js"></script>
 	<script src="js/thirdparty/highcharts.js"></script>
+	<script src="js/thirdparty/d3.v3.min.js"></script>
 	<script src="js/jquery.all-my-charts.js"></script>
 
 	<style>
@@ -32,6 +33,9 @@
 
 	<h1><a href="https://github.com/csvsoundsystem/all-my-charts/blob/master/examples/csv_example.html" target="_blank">CSV example</a></h1>
 	<div id="csv-container" style="width: 700px; height: 400px;"></div>
+
+	<h1><a href="https://github.com/csvsoundsystem/all-my-charts/blob/master/examples/histogram_example.html" target="_blank">Histogram example</a></h1>
+	<div id="hist-container" style="width: 700px; height: 400px;"></div>
 
 	<div id="hover-templ"></div>
 	<script>
@@ -99,6 +103,17 @@
 	    min_datetick_interval: 24 * 3600 * 1000 // Don't let it go less than a day (optional)
 	  }, function(response){
 	  	console.log('CSV chart created'); // Chart done
+	  });
+
+
+	  $('#hist-container').allMyCharts({
+	  	data_format: 'csv',
+	    data: "examples/data/histogram.csv",
+	    chart_type: 'hist',
+	    title: 'Histogram',
+	    x: 'data'
+	  }, function(response){
+	  	console.log('Histogram created'); // Chart done
 	  });
 
 	}).call(this);
