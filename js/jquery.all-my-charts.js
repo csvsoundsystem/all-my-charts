@@ -13,7 +13,9 @@
         title: 'Chart Title',
         y_axis_label: 'Y-Axis label',
         color_palette: ['#1f77b4', '#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf','#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5', '#c49c94', '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5'],
-        min_datetick_interval: 0 // To not let the day go less than a day use 24 * 3600 * 1000
+        min_datetick_interval: 0, // To not let the day go less than a day use 24 * 3600 * 1000
+        binning: 'jenks',
+        steps: 15
       }, options ),
       response_ds;
 
@@ -24,6 +26,207 @@
         val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
       }
       return val;
+    };
+
+    var stats = {
+      mode: function(ary){
+        var counter = {},
+            mode = [],
+            max = 0;
+        for (var i in ary) {
+            if (!(ary[i] in counter))
+                counter[ary[i]] = 0;
+            counter[ary[i]]++;
+
+            if (counter[ary[i]] == max)
+                mode.push(ary[i]);
+            else if (counter[ary[i]] > max) {
+                max = counter[ary[i]];
+                mode = [ary[i]];
+            };
+        };
+        if (max > 1){
+          return mode;
+        }else{
+          return 'No mode'
+        }
+      },
+      headTail: function(arr, data_min, data_max){
+        var mean = ss.mean(arr),
+            bins = [data_min];
+
+        while (arr.length > 1){
+          arr = _.filter(arr, function(d) { return d > mean } );
+          mean = ss.mean(arr);
+          bins.push(mean)
+        };
+
+        return bins;
+      }
+    };
+
+    // ## Compute Matrices for Jenks
+    //
+    // Compute the matrices required for Jenks breaks. These matrices
+    // can be used for any classing of data with `classes <= n_classes`
+    function jenksMatrices(data, n_classes) {
+
+      // in the original implementation, these matrices are referred to
+      // as `LC` and `OP`
+      //
+      // * lower_class_limits (LC): optimal lower class limits
+      // * variance_combinations (OP): optimal variance combinations for all classes
+      var lower_class_limits = [],
+          variance_combinations = [],
+          // loop counters
+          i, j,
+          // the variance, as computed at each step in the calculation
+          variance = 0;
+
+      // Initialize and fill each matrix with zeroes
+      for (i = 0; i < data.length + 1; i++) {
+          var tmp1 = [], tmp2 = [];
+          // despite these arrays having the same values, we need
+          // to keep them separate so that changing one does not change
+          // the other
+          for (j = 0; j < n_classes + 1; j++) {
+              tmp1.push(0);
+              tmp2.push(0);
+          }
+          lower_class_limits.push(tmp1);
+          variance_combinations.push(tmp2);
+      }
+
+      for (i = 1; i < n_classes + 1; i++) {
+          lower_class_limits[1][i] = 1;
+          variance_combinations[1][i] = 0;
+          // in the original implementation, 9999999 is used but
+          // since Javascript has `Infinity`, we use that.
+          for (j = 2; j < data.length + 1; j++) {
+              variance_combinations[j][i] = Infinity;
+          }
+      }
+
+      for (var l = 2; l < data.length + 1; l++) {
+
+          // `SZ` originally. this is the sum of the values seen thus
+          // far when calculating variance.
+          var sum = 0,
+              // `ZSQ` originally. the sum of squares of values seen
+              // thus far
+              sum_squares = 0,
+              // `WT` originally. This is the number of
+              w = 0,
+              // `IV` originally
+              i4 = 0;
+
+          // in several instances, you could say `Math.pow(x, 2)`
+          // instead of `x * x`, but this is slower in some browsers
+          // introduces an unnecessary concept.
+          for (var m = 1; m < l + 1; m++) {
+
+              // `III` originally
+              var lower_class_limit = l - m + 1,
+                  val = data[lower_class_limit - 1];
+
+              // here we're estimating variance for each potential classing
+              // of the data, for each potential number of classes. `w`
+              // is the number of data points considered so far.
+              w++;
+
+              // increase the current sum and sum-of-squares
+              sum += val;
+              sum_squares += val * val;
+
+              // the variance at this point in the sequence is the difference
+              // between the sum of squares and the total x 2, over the number
+              // of samples.
+              variance = sum_squares - (sum * sum) / w;
+
+              i4 = lower_class_limit - 1;
+
+              if (i4 !== 0) {
+                  for (j = 2; j < n_classes + 1; j++) {
+                      // if adding this element to an existing class
+                      // will increase its variance beyond the limit, break
+                      // the class at this point, setting the `lower_class_limit`
+                      // at this point.
+                      if (variance_combinations[l][j] >=
+                          (variance + variance_combinations[i4][j - 1])) {
+                          lower_class_limits[l][j] = lower_class_limit;
+                          variance_combinations[l][j] = variance +
+                              variance_combinations[i4][j - 1];
+                      }
+                  }
+              }
+          }
+
+          lower_class_limits[l][1] = 1;
+          variance_combinations[l][1] = variance;
+      }
+
+      // return the two matrices. for just providing breaks, only
+      // `lower_class_limits` is needed, but variances can be useful to
+      // evaluage goodness of fit.
+      return {
+          lower_class_limits: lower_class_limits,
+          variance_combinations: variance_combinations
+      };
+    }
+
+    // ## Pull Breaks Values for Jenks
+    //
+    // the second part of the jenks recipe: take the calculated matrices
+    // and derive an array of n breaks.
+    function jenksBreaks(data, lower_class_limits, n_classes) {
+
+      var k = data.length - 1,
+          kclass = [],
+          countNum = n_classes;
+
+      // the calculation of classes will never include the upper and
+      // lower bounds, so we need to explicitly set them
+      kclass[n_classes] = data[data.length - 1];
+      kclass[0] = data[0];
+
+      // the lower_class_limits matrix is used as indexes into itself
+      // here: the `k` variable is reused in each iteration.
+      while (countNum > 1) {
+          kclass[countNum - 1] = data[lower_class_limits[k][countNum] - 2];
+          k = lower_class_limits[k][countNum] - 1;
+          countNum--;
+      }
+
+      return kclass;
+    }
+
+    // # [Jenks natural breaks optimization](http://en.wikipedia.org/wiki/Jenks_natural_breaks_optimization)
+    //
+    // Implementations: [1](http://danieljlewis.org/files/2010/06/Jenks.pdf) (python),
+    // [2](https://github.com/vvoovv/djeo-jenks/blob/master/main.js) (buggy),
+    // [3](https://github.com/simogeo/geostats/blob/master/lib/geostats.js#L407) (works)
+    //
+    // Depends on `jenksBreaks()` and `jenksMatrices()`
+    function jenks(data, n_classes) {
+      if (n_classes > data.length) return null;
+
+      // sort data in numerical order, since this is expected
+      // by the matrices function
+      data = data.slice().sort(function (a, b) { return a - b; });
+
+      // get our basic matrices
+      var matrices = jenksMatrices(data, n_classes),
+          // we only need lower class limits here
+          lower_class_limits = matrices.lower_class_limits;
+
+      // extract n_classes out of the computed matrices
+      return jenksBreaks(data, lower_class_limits, n_classes);
+
+    }
+
+    function rounderToNPlaces(num, places) {
+      var multiplier = Math.pow(10, places);
+      return Math.round(num * multiplier) / multiplier;
     };
 
     function currencyFormatNumber(val){
@@ -77,15 +280,172 @@
       response_ds.fetch({ 
         success : function() {
           var ds = this;
-          reshapeData(ds, chart_settings, $ctnr, json_chart_callback)
+          if (chart_settings.chart_type != 'hist'){
+            reshapeData(ds, chart_settings, $ctnr, json_chart_callback)
+          }else{
+            hist.createHistogram(ds, chart_settings, $ctnr, json_chart_callback)
+          }
         },
         error : function() {
         }
       });
     };
 
+    var hist = {
+      createHistogram: function(data, chart_settings, $ctnr, json_chart_callback){
+        try{
+          data = data.column(chart_settings.x).data;
+          this.drawHighChart( this.constructHistData(data, chart_settings), chart_settings, $ctnr );
+          json_chart_callback('Chart created');
+        }
+        catch(err){
+          alert("Error: Try selecting fewer bins or smaller breaks.");
+        }
+      },
+      constructHistData: function(data, settings){
+        var bin_info     = this.createBinsAndXAxis(data, settings.binning, settings.steps),
+            data_buckets = this.createDataBuckets(data, bin_info.binned_data, settings.binning, settings.steps);
+        
+        var hist_data = {
+          bin_xAxis: bin_info.bin_xAxis,
+          data_buckets: data_buckets
+        };
+
+        return hist_data;
+      },
+      createBinsAndXAxis: function(data, binning, steps){
+        var data_min  = d3.min(data),
+            data_max  = d3.max(data),
+            range     = data_max - data_min,
+            bins      = this.calcBins(data, range, data_min, data_max, binning, steps),
+            bin_xAxis = [],
+            binned_data,
+            bin_min,
+            bin_max;
+
+        binned_data = d3.layout.histogram()
+            .bins(bins)
+            (data);
+
+        $.each(binned_data, function(index, value){
+
+          bin_min = rounderToNPlaces(value['x'], 2);
+          bin_max = '<' + rounderToNPlaces(value['x'] + value['dx'], 2);
+
+          if (value['x'] == data_min){
+            bin_min = rounderToNPlaces(value['x'], 2);
+          };
+
+          bin_xAxis.push(String(bin_min + ' to ' + bin_max));
+
+        });
+
+        var bin_info = {
+          binned_data: binned_data,
+          bin_xAxis: bin_xAxis
+        };
+
+        return bin_info;
+
+      },
+      createDataBuckets: function(data, binned_data, binning){
+        var data_buckets  = _.map(binned_data, function(d) { return d.length } );
+        return data_buckets;
+      },
+      calcBins: function(data, range, data_min, data_max, binning, user_bins_breaks){
+        var bins;
+        if (binning == 'even'){
+          bins = user_bins_breaks;
+        }else if (binning == 'jenks'){
+          bins = jenks(data, user_bins_breaks);
+        }else if (binning == 'head-tail'){
+          bins = stats.headTail(data, data_min, data_max);
+        }else if (binning == 'custom-breaks'){
+          bins = _.map(user_bins_breaks.split(','), function (d) { return parseInt(d)} )
+        }else if (binning == 'custom-interval'){
+          bins = range / user_bins_breaks;
+        };
+
+        return bins;
+      },
+      drawHighChart: function(hist_data, chart_settings, $ctnr){
+        $ctnr.highcharts({
+          chart: {
+            type: 'column',
+            marginRight: 0,
+            marginBottom: 50
+          },
+          title: {
+            text: chart_settings.title,
+            x: -18,
+            style: {
+              color: '#303030',
+              font: 'normal 16px "Arial", sans-serif'
+            }//center
+          },
+          subtitle: {
+            text: '',
+          },
+          xAxis: {
+            categories: hist_data.bin_xAxis,
+          title:{
+            text: '',
+            style: {
+                color: '#303030',
+                font: 'normal 13px "Arial", sans-serif'
+              }
+            }
+          },
+          yAxis: {
+            title: {
+              text: 'Count',
+              style: {
+                color: '#303030',
+                font: 'normal 13px "Arial", sans-serif'
+              }
+            }
+          },
+          tooltip: {
+            formatter: function() {
+              return 'Count in group: ' + this.y + "<br/>Range: " + this.x;
+            },
+            borderRadius: 1,
+            borderWidth: 1,
+            shadow: false
+          },
+          plotOptions: {
+            series: {
+              shadow: false,
+              borderWidth: 1,
+              borderColor: 'white',
+              pointPadding: 0,
+              groupPadding: 0,
+            },
+            column: {
+              pointPadding: 0.2,
+              borderWidth: 0
+            }
+          },
+          legend: {
+            y: 100,
+            x: -10,
+            align: 'right',
+            enabled: false,
+            borderWidth: 0,
+            layout: 'vertical',
+            verticalAlign: 'top'
+          },
+          series: [{
+            name: chart_settings.y_axis_label,
+            data: hist_data.data_buckets,
+            color:'#6c0'
+          }]
+        });
+      }
+    }
+
     function reshapeData(ds, chart_settings, $ctnr, json_chart_callback){
-        var items_uniq = findDistinctSeriesNames(ds, chart_settings.series), // findDistinctSeriesNames takes a miso.dataset object and the column name whose values you want unique records of. It returns an array of unique names that appear as values in the specified column.
+        var items_uniq     = findDistinctSeriesNames(ds, chart_settings.series), // findDistinctSeriesNames takes a miso.dataset object and the column name whose values you want unique records of. It returns an array of unique names that appear as values in the specified column.
             series_ds_arr  = geEachSeriesDs(ds, items_uniq, chart_settings.series), // getDataForEachSeries takes a miso.dataset object, the unique columns and the name of the column those unique items appear in. It returns an array of miso ds objects, one for every unique item name.
             series_data_hc = createHighChartsDataSeries(series_ds_arr, chart_settings.series, chart_settings.y, chart_settings.x, chart_settings.chart_type, chart_settings.color_palette), // createHighChartsDataSeries returns an arrray of objects that conforms to how highcharts like a series object to be, namely, a name as a string, data as an array of values and for our purposes a color chosen from the color palette index. For a datetime series, highcharts wants the data array to be an array of arrays. Each value point is an array of two values, the date in unix time and what will be the y coordinate.
             x_axis_info    = getChartTypeSpecificXAxis(chart_settings.chart_type, items_uniq, chart_settings.series, chart_settings.min_datetick_interval); // getChartTypeSpecificXAxis this will pick what kind of Highcharts xAxis object is added into the chart JSON.
@@ -261,9 +621,8 @@
       
     };
 
-
     function chartLoading($ctnr){
-      $ctnr.html('<div class="chart-loading">Loading chart... <img src="data:image/gif;base64,R0lGODlhEAAQAPQAAP///wAAAPj4+Dg4OISEhAYGBiYmJtbW1qioqBYWFnZ2dmZmZuTk5JiYmMbGxkhISFZWVgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAAFUCAgjmRpnqUwFGwhKoRgqq2YFMaRGjWA8AbZiIBbjQQ8AmmFUJEQhQGJhaKOrCksgEla+KIkYvC6SJKQOISoNSYdeIk1ayA8ExTyeR3F749CACH5BAkKAAAALAAAAAAQABAAAAVoICCKR9KMaCoaxeCoqEAkRX3AwMHWxQIIjJSAZWgUEgzBwCBAEQpMwIDwY1FHgwJCtOW2UDWYIDyqNVVkUbYr6CK+o2eUMKgWrqKhj0FrEM8jQQALPFA3MAc8CQSAMA5ZBjgqDQmHIyEAIfkECQoAAAAsAAAAABAAEAAABWAgII4j85Ao2hRIKgrEUBQJLaSHMe8zgQo6Q8sxS7RIhILhBkgumCTZsXkACBC+0cwF2GoLLoFXREDcDlkAojBICRaFLDCOQtQKjmsQSubtDFU/NXcDBHwkaw1cKQ8MiyEAIfkECQoAAAAsAAAAABAAEAAABVIgII5kaZ6AIJQCMRTFQKiDQx4GrBfGa4uCnAEhQuRgPwCBtwK+kCNFgjh6QlFYgGO7baJ2CxIioSDpwqNggWCGDVVGphly3BkOpXDrKfNm/4AhACH5BAkKAAAALAAAAAAQABAAAAVgICCOZGmeqEAMRTEQwskYbV0Yx7kYSIzQhtgoBxCKBDQCIOcoLBimRiFhSABYU5gIgW01pLUBYkRItAYAqrlhYiwKjiWAcDMWY8QjsCf4DewiBzQ2N1AmKlgvgCiMjSQhACH5BAkKAAAALAAAAAAQABAAAAVfICCOZGmeqEgUxUAIpkA0AMKyxkEiSZEIsJqhYAg+boUFSTAkiBiNHks3sg1ILAfBiS10gyqCg0UaFBCkwy3RYKiIYMAC+RAxiQgYsJdAjw5DN2gILzEEZgVcKYuMJiEAOwAAAAAAAAAAAA=="></div>')
+      $ctnr.html('<center><div style="font-family:Helvetica,sans-serif;" class="chart-loading">Loading chart... <img src="data:image/gif;base64,R0lGODlhEAAQAPQAAP///wAAAPj4+Dg4OISEhAYGBiYmJtbW1qioqBYWFnZ2dmZmZuTk5JiYmMbGxkhISFZWVgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAAFUCAgjmRpnqUwFGwhKoRgqq2YFMaRGjWA8AbZiIBbjQQ8AmmFUJEQhQGJhaKOrCksgEla+KIkYvC6SJKQOISoNSYdeIk1ayA8ExTyeR3F749CACH5BAkKAAAALAAAAAAQABAAAAVoICCKR9KMaCoaxeCoqEAkRX3AwMHWxQIIjJSAZWgUEgzBwCBAEQpMwIDwY1FHgwJCtOW2UDWYIDyqNVVkUbYr6CK+o2eUMKgWrqKhj0FrEM8jQQALPFA3MAc8CQSAMA5ZBjgqDQmHIyEAIfkECQoAAAAsAAAAABAAEAAABWAgII4j85Ao2hRIKgrEUBQJLaSHMe8zgQo6Q8sxS7RIhILhBkgumCTZsXkACBC+0cwF2GoLLoFXREDcDlkAojBICRaFLDCOQtQKjmsQSubtDFU/NXcDBHwkaw1cKQ8MiyEAIfkECQoAAAAsAAAAABAAEAAABVIgII5kaZ6AIJQCMRTFQKiDQx4GrBfGa4uCnAEhQuRgPwCBtwK+kCNFgjh6QlFYgGO7baJ2CxIioSDpwqNggWCGDVVGphly3BkOpXDrKfNm/4AhACH5BAkKAAAALAAAAAAQABAAAAVgICCOZGmeqEAMRTEQwskYbV0Yx7kYSIzQhtgoBxCKBDQCIOcoLBimRiFhSABYU5gIgW01pLUBYkRItAYAqrlhYiwKjiWAcDMWY8QjsCf4DewiBzQ2N1AmKlgvgCiMjSQhACH5BAkKAAAALAAAAAAQABAAAAVfICCOZGmeqEgUxUAIpkA0AMKyxkEiSZEIsJqhYAg+boUFSTAkiBiNHks3sg1ILAfBiS10gyqCg0UaFBCkwy3RYKiIYMAC+RAxiQgYsJdAjw5DN2gILzEEZgVcKYuMJiEAOwAAAAAAAAAAAA=="></div></center>')
     };
 
     function startTheShow(chart_settings, $ctnr, callback){

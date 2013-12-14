@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>All my charts: If I could see all my charts tonight.</title>
+	<link href="../css/jquery.all-my-charts.css"  el="stylesheet" type="text/css" >
+	
+	<script src="../js/thirdparty/jquery.1.10.1.min.js"></script>
+	<script src="../js/thirdparty/miso.ds.deps.ie.0.4.1.js"></script>
+	<script src="../js/thirdparty/highcharts.js"></script>
+	<script src="../js/thirdparty/d3.v3.min.js"></script>
+	<script src="../js/jquery.all-my-charts.js"></script>
+</head>
+<body>
+	<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+
+	<div id="hover-templ"></div>
+	<script>
+	(function(){
+
+	  var chart_settings = {
+	  	data_format: 'csv',
+	    data: "data/histogram.csv",
+	    chart_type: 'hist',
+	    x: 'data',
+	    title: 'Histogram',
+	    y_axis_label: 'Y'
+	  };
+
+	  $('#container').allMyCharts(chart_settings, function(response){
+	  	// Chart done
+	  	console.log(response);
+	  });
+
+	}).call(this);
+
+
+	</script>
+</body>
+</html>
