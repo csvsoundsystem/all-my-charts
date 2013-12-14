@@ -1,6 +1,6 @@
 (function ( $ ) {
 
-  $.fn.dynamicHighchart = function ( options , callback) {
+  $.fn.allMyCharts = function ( options , callback) {
      var chart_settings = $.extend({
         // These are the defaults.
         data_format: 'json',

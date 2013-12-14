@@ -2,11 +2,12 @@
 <html>
 <head>
 	<title>All my charts: If I could see all my charts tonight.</title>
-	<link href="css/jquery.dynamic-highchart.css" rel="stylesheet" type="text/css">
+	<link href="../css/jquery.all-my-charts.css"  el="stylesheet" type="text/css" >
+	
 	<script src="js/thirdparty/jquery.1.10.1.min.js"></script>
 	<script src="js/thirdparty/miso.ds.deps.ie.0.4.1.js"></script>
 	<script src="js/thirdparty/highcharts.js"></script>
-	<script src="js/jquery.dynamic-highchart.js"></script>
+	<script src="js/jquery.all-my-charts.js"></script>
 
 	<style>
 		h1{
@@ -36,7 +37,7 @@
 	<script>
 	(function(){
 
-	  $('#remote-json-container').dynamicHighchart({
+	  $('#remote-json-container').allMyCharts({
 	    data: "https://premium.scraperwiki.com/cc7znvq/47d80ae900e04f2/sql/?q=SELECT * FROM t2 WHERE year = 2012 AND (month = 1) AND is_total = 1",
 	    chart_type: 'datetime',
 	    series: 'item',
@@ -73,7 +74,7 @@
 			},
 		];
 
-	  $('#internal-json-container').dynamicHighchart({
+	  $('#internal-json-container').allMyCharts({
 	    data: data,
 	    chart_type: 'datetime',
 	    series: 'name',
@@ -85,7 +86,7 @@
 	  	console.log('Inline JSON chart created'); // Chart done
 	  });
 
-	  $('#csv-container').dynamicHighchart({
+	  $('#csv-container').allMyCharts({
 	  	data_format: 'csv',
 	  	delimiter: ',', // This defaults to ',' so there's no need to include it. Showing it just to show usage.
 	    data: "examples/data/data.csv",
