@@ -4,7 +4,7 @@
 
 ### <a href="http://csvsoundsystem.github.io/all-my-charts/" target="_blank">View the example gallery</a>
 
-### Usage
+### Usage 
 
 This plugin requires <a href="" target="_blank">`jQuery`</a>, <a href="https://github.com/misoproject/dataset" target="_blank">`miso.dataset`</a> with dependencies, and <a href="http://www.highcharts.com/" target="_blank">`highcharts`</a>. Require them and the main plugin like so:
 
