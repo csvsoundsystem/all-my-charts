@@ -362,6 +362,9 @@
         }else if (binning == 'head-tail'){
           bins = stats.headTail(data, data_min, data_max);
         }else if (binning == 'custom-breaks'){
+          if (typeof user_bins_breaks == 'string') {
+            user_bins_breaks = user_bins_breaks.split(',')
+          } 
           bins = _.map(user_bins_breaks.split(','), function (d) { return parseInt(d)} )
         }else if (binning == 'custom-interval'){
           bins = range / user_bins_breaks;
