@@ -8,14 +8,14 @@
 
 This plugin requires <a href="" target="_blank">`jQuery`</a>, <a href="https://github.com/misoproject/dataset" target="_blank">`miso.dataset`</a> with dependencies, and <a href="http://www.highcharts.com/" target="_blank">`highcharts`</a>. Require them and the main plugin like so:
 
-````
+````html
 <script src="path/to/jquery.1.10.1.min.js"></script>
 <script src="path/to/miso.ds.deps.ie.0.4.1.js"></script>
 <script src="path/to/highcharts.js"></script>
 <script src="path/to/jquery.all-my-charts.js"></script>
 ````
 
-````
+````js
 $('#container').allMyCharts({
 	data: "https://premium.scraperwiki.com/cc7znvq/47d80ae900e04f2/sql/?q=SELECT * FROM t2 WHERE year = 2012 AND type = 'withdrawal' AND (month = 1 OR month = 2) AND is_total = 0",
 	chart_type: 'datetime',
